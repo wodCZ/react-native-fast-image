@@ -9,6 +9,7 @@ import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.GlideModule;
+import com.facebook.react.modules.network.OkHttpClientProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,10 +35,10 @@ public class OkHttpProgressGlideModule implements GlideModule {
 
     @Override
     public void registerComponents(Context context, Glide glide) {
-        OkHttpClient client = new OkHttpClient
+        OkHttpClient.Builder builder = new OkHttpClient
                 .Builder()
-                .addInterceptor(createInterceptor(new DispatchingProgressListener()))
-                .build();
+                .addInterceptor(createInterceptor(new DispatchingProgressListener()));
+        OkHttpClient client = OkHttpClientProvider.enableTls12OnPreLollipop(builder).build();
         glide.register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(client));
     }
 
